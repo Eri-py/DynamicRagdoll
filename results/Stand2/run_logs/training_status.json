@@ -1,0 +1,29 @@
+{
+    "Aoi": {
+        "checkpoints": [
+            {
+                "steps": 145981,
+                "file_path": "results\\Stand2\\Aoi\\Aoi-145981.onnx",
+                "reward": 4.056585011637308,
+                "creation_time": 1731018759.298631,
+                "auxillary_file_paths": [
+                    "results\\Stand2\\Aoi\\Aoi-145981.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 145981,
+            "file_path": "results\\Stand2\\Aoi.onnx",
+            "reward": 4.056585011637308,
+            "creation_time": 1731018759.298631,
+            "auxillary_file_paths": [
+                "results\\Stand2\\Aoi\\Aoi-145981.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "1.1.0",
+        "torch_version": "2.5.1+cu124"
+    }
+}
