@@ -16,12 +16,11 @@ namespace GameAI {
             name = fieldName; // ensure consistency in different agent rigs
             rb = bt.GetComponent<Rigidbody>();
             joint = bt.TryGetComponent<ConfigurableJoint>(out var hasJoint) ? hasJoint : null;
-            startingPos = bt.localPosition;
-            startingRot = bt.localRotation;
+            startingPos = bt.transform.position;
+            startingRot = bt.transform.rotation;
             groundContact = bt.GetComponent<GroundContact>();
         }
         // Methods
-        // Set the target rotation for the body part
         public void SetTargetRotation(float x, float y, float z) {
             if (joint == null) {
                 Debug.LogWarning($"Body part {name} has no ConfigurableJoint.");
@@ -45,18 +44,15 @@ namespace GameAI {
             } 
             // Normalize strength from [-1, 1] to [0, 1]
             strength = (strength + 1f) * 0.5f;
-            // Configure the joint slerp drive
-            JointDrive jd = new JointDrive {
-                positionSpring = 10000f,
-                positionDamper = 100f,  
-                maximumForce = strength * 25000
+            JointDrive jd = new()
+            {
+                positionSpring = 40000f,
+                positionDamper = 5000f,  
+                maximumForce = strength * 20000
             };
-            // Apply the configured JointDrive to the joint's slerpDrive
             joint.slerpDrive = jd;
         }
-        // Reset body part position after each episode end
         public void Reset() {
-            startingPos += new Vector3(0f, 1f, 0f);
             rb.transform.SetPositionAndRotation(startingPos, startingRot);
             rb.velocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;

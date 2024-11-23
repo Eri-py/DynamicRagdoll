@@ -4,6 +4,8 @@ using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Actuators;
+using UnityEngine.Assertions.Must;
+using Unity.VisualScripting.Dependencies.Sqlite;
 
 namespace GameAI {
     public class Stand : Agent {
@@ -54,29 +56,16 @@ namespace GameAI {
         }
         public override void CollectObservations(VectorSensor sensor) {
             foreach (var bpController in bpControllers) {
-                // If body part is touching the ground
                 sensor.AddObservation(bpController.groundContact.isTouchingGround);
-                // Position of body part
                 sensor.AddObservation(bpController.rb.transform.localPosition);
-                // Rotation of body part
                 sensor.AddObservation(bpController.rb.transform.localRotation);
-                // linear velocity of body part
                 sensor.AddObservation(bpController.rb.velocity);
-                // Angular velocity of body part
                 sensor.AddObservation(bpController.rb.angularVelocity);
-                // target rotation of joint
-                if (bpController.joint) {
-                    sensor.AddObservation(bpController.joint.targetRotation);
-                }
-                if (bpController.joint != null) {
-                    sensor.AddObservation(Mathf.InverseLerp(bpController.joint.lowAngularXLimit.limit, 
-                                                            bpController.joint.highAngularXLimit.limit, 
-                                                            bpController.joint.targetRotation.eulerAngles.x));
-                }
             }
         }
         public override void OnActionReceived(ActionBuffers actions) {
             int actionIndex = 0;
+
             foreach (var bpController in bpControllers){
                 if (bpController.joint != null) {
                     float x = actions.ContinuousActions[actionIndex++];
@@ -88,7 +77,37 @@ namespace GameAI {
                     bpController.SetJointStrength(strength);
                 }
             }
+            Rewards();
+        }
+        private void Rewards() {
+            int groundContacts = 0; 
+            float uprightReward = 0.0f;
 
+            foreach (var bpController in bpControllers) {
+                if (bpController.groundContact.isTouchingGround && bpController.groundContact.penalizeAgent) {
+                    groundContacts++; 
+                    AddReward(bpController.groundContact.penalty);
+                }
+
+                if (bpController.groundContact.isTouchingGround) {
+                    if (bpController.name == "leftFoot" || bpController.name == "rightFoot") {
+                        AddReward(1.0f);
+                    }
+                }
+
+                if (bpController.name == "hip" || bpController.name == "spine" || bpController.name == "chest") {
+                    Vector3 bodyUp = bpController.rb.transform.up; 
+                    uprightReward += Vector3.Dot(bodyUp, Vector3.up); 
+                }
+            }
+            AddReward(uprightReward / 3);
+
+            if (groundContacts >= 5) {
+                AddReward(-2.0f);
+                // Debug.Log($"Reset triggered: {groundContacts} body parts touched the ground at time {Time.time}");
+                EndEpisode();
+            }
+            // Debug.Log($"Reward: {GetCumulativeReward()}");
         }
         public override void Heuristic(in ActionBuffers actionsOut) {
             var continuousActions = actionsOut.ContinuousActions;

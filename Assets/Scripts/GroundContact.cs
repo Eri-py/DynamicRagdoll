@@ -7,7 +7,6 @@ namespace GameAI {
         // Attributes
         public bool isTouchingGround;
         public bool penalizeAgent;
-        public bool endEpisode;
         public float penalty = -1;
         const String groundTag = "Ground";
         // Methods

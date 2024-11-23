@@ -1,23 +1,59 @@
 {
-    "Aoi": {
+    "Stand": {
         "checkpoints": [
             {
-                "steps": 145981,
-                "file_path": "results\\Stand2\\Aoi\\Aoi-145981.onnx",
-                "reward": 4.056585011637308,
-                "creation_time": 1731018759.298631,
+                "steps": 499997,
+                "file_path": "results\\Stand2\\Stand\\Stand-499997.onnx",
+                "reward": -15.59505638885498,
+                "creation_time": 1732320483.365476,
                 "auxillary_file_paths": [
-                    "results\\Stand2\\Aoi\\Aoi-145981.pt"
+                    "results\\Stand2\\Stand\\Stand-499997.pt"
+                ]
+            },
+            {
+                "steps": 552413,
+                "file_path": "results\\Stand2\\Stand\\Stand-552413.onnx",
+                "reward": -14.498138060675123,
+                "creation_time": 1732320629.3150296,
+                "auxillary_file_paths": [
+                    "results\\Stand2\\Stand\\Stand-552413.pt"
+                ]
+            },
+            {
+                "steps": 999995,
+                "file_path": "results\\Stand2\\Stand\\Stand-999995.onnx",
+                "reward": -9.787465923017047,
+                "creation_time": 1732377243.268509,
+                "auxillary_file_paths": [
+                    "results\\Stand2\\Stand\\Stand-999995.pt"
+                ]
+            },
+            {
+                "steps": 1499991,
+                "file_path": "results\\Stand2\\Stand\\Stand-1499991.onnx",
+                "reward": -7.2402050642266245,
+                "creation_time": 1732378652.2231512,
+                "auxillary_file_paths": [
+                    "results\\Stand2\\Stand\\Stand-1499991.pt"
+                ]
+            },
+            {
+                "steps": 1509299,
+                "file_path": "results\\Stand2\\Stand\\Stand-1509299.onnx",
+                "reward": -7.151541620667218,
+                "creation_time": 1732378677.5055814,
+                "auxillary_file_paths": [
+                    "results\\Stand2\\Stand\\Stand-1509299.pt"
                 ]
             }
         ],
         "final_checkpoint": {
-            "steps": 145981,
-            "file_path": "results\\Stand2\\Aoi.onnx",
-            "reward": 4.056585011637308,
-            "creation_time": 1731018759.298631,
+            "steps": 1509299,
+            "file_path": "results\\Stand2\\Stand.onnx",
+            "reward": -7.151541620667218,
+            "creation_time": 1732378677.5055814,
             "auxillary_file_paths": [
-                "results\\Stand2\\Aoi\\Aoi-145981.pt"
+                "results\\Stand2\\Stand\\Stand-1509299.pt"
             ]
         }
     },
