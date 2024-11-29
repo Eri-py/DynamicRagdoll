@@ -1,8 +1,8 @@
 using UnityEngine;
 
 namespace GameAI {
-    [System.Serializable]
     #nullable enable
+    [System.Serializable]
     public class BodyPartController {
         // Attributes
         public Rigidbody rb;

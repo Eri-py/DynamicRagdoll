@@ -4,8 +4,7 @@ using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Actuators;
-using UnityEngine.Assertions.Must;
-using Unity.VisualScripting.Dependencies.Sqlite;
+using System;
 
 namespace GameAI {
     public class Stand : Agent {
@@ -28,27 +27,26 @@ namespace GameAI {
         public Transform lowerRightArm;
         public Transform rightHand;
         public Transform head;
-        private List<BodyPartController> bpControllers = new List<BodyPartController>();
+        private List<BodyPartController> bpControllers = new();
         // Methods
         public override void Initialize() {
-        bpControllers.Add(new BodyPartController(hip, "hip"));
-        bpControllers.Add(new BodyPartController(leftThigh, "leftThigh"));
-        bpControllers.Add(new BodyPartController(leftShin, "leftShin"));
-        bpControllers.Add(new BodyPartController(leftFoot, "leftFoot"));
-        bpControllers.Add(new BodyPartController(rightThigh, "rightThigh"));
-        bpControllers.Add(new BodyPartController(rightShin, "rightShin"));
-        bpControllers.Add(new BodyPartController(rightFoot, "rightFoot"));
-        bpControllers.Add(new BodyPartController(spine, "spine"));
-        bpControllers.Add(new BodyPartController(chest, "chest"));
-        bpControllers.Add(new BodyPartController(upperLeftArm, "upperLeftArm"));
-        bpControllers.Add(new BodyPartController(lowerLeftArm, "lowerLeftArm"));
-        bpControllers.Add(new BodyPartController(leftHand, "leftHand"));
-        bpControllers.Add(new BodyPartController(upperRightArm, "upperRightArm"));
-        bpControllers.Add(new BodyPartController(lowerRightArm, "lowerRightArm"));
-        bpControllers.Add(new BodyPartController(rightHand, "rightHand")); 
-        bpControllers.Add(new BodyPartController(head, "head"));
+            bpControllers.Add(new BodyPartController(hip, "hip"));
+            bpControllers.Add(new BodyPartController(leftThigh, "leftThigh"));
+            bpControllers.Add(new BodyPartController(leftShin, "leftShin"));
+            bpControllers.Add(new BodyPartController(leftFoot, "leftFoot"));
+            bpControllers.Add(new BodyPartController(rightThigh, "rightThigh"));
+            bpControllers.Add(new BodyPartController(rightShin, "rightShin"));
+            bpControllers.Add(new BodyPartController(rightFoot, "rightFoot"));
+            bpControllers.Add(new BodyPartController(spine, "spine"));
+            bpControllers.Add(new BodyPartController(chest, "chest"));
+            bpControllers.Add(new BodyPartController(upperLeftArm, "upperLeftArm"));
+            bpControllers.Add(new BodyPartController(lowerLeftArm, "lowerLeftArm"));
+            bpControllers.Add(new BodyPartController(leftHand, "leftHand"));
+            bpControllers.Add(new BodyPartController(upperRightArm, "upperRightArm"));
+            bpControllers.Add(new BodyPartController(lowerRightArm, "lowerRightArm"));
+            bpControllers.Add(new BodyPartController(rightHand, "rightHand")); 
+            bpControllers.Add(new BodyPartController(head, "head"));
         }
-        // Reset each body part at start of each episode
         public override void OnEpisodeBegin() {
             foreach (var bpController in bpControllers){
                 bpController.Reset();
@@ -66,13 +64,21 @@ namespace GameAI {
         public override void OnActionReceived(ActionBuffers actions) {
             int actionIndex = 0;
 
-            foreach (var bpController in bpControllers){
+            foreach (var bpController in bpControllers) {
                 if (bpController.joint != null) {
-                    float x = actions.ContinuousActions[actionIndex++];
-                    float y = actions.ContinuousActions[actionIndex++];
-                    float z = actions.ContinuousActions[actionIndex++];
+                    ConfigurableJoint joint = bpController.joint;
+                    float x = 0, y = 0, z = 0;
+
+                    if (joint.angularXMotion != ConfigurableJointMotion.Locked) {
+                        x = actions.ContinuousActions[actionIndex++];
+                    }
+                    if (joint.angularYMotion != ConfigurableJointMotion.Locked) {
+                        y = actions.ContinuousActions[actionIndex++];
+                    }
+                    if (joint.angularZMotion != ConfigurableJointMotion.Locked) {
+                        z = actions.ContinuousActions[actionIndex++];
+                    }
                     float strength = actions.ContinuousActions[actionIndex++];
-                    
                     bpController.SetTargetRotation(x, y, z);
                     bpController.SetJointStrength(strength);
                 }
@@ -80,47 +86,73 @@ namespace GameAI {
             Rewards();
         }
         private void Rewards() {
-            int groundContacts = 0; 
-            float uprightReward = 0.0f;
+            int groundContacts = 0;
 
             foreach (var bpController in bpControllers) {
                 if (bpController.groundContact.isTouchingGround && bpController.groundContact.penalizeAgent) {
-                    groundContacts++; 
-                    AddReward(bpController.groundContact.penalty);
+                    groundContacts++;
+                    AddReward(-1.0f);
                 }
 
-                if (bpController.groundContact.isTouchingGround) {
-                    if (bpController.name == "leftFoot" || bpController.name == "rightFoot") {
-                        AddReward(1.0f);
+                if (bpController.name == "hip" || bpController.name == "spine" || bpController.name == "chest" || bpController.name.Contains("Thigh")) {
+                    Vector3 bodyUp = bpController.rb.transform.up;
+                    float alignment = Vector3.Dot(bodyUp, Vector3.up);
+                    AddReward(alignment / 5);
+                    if (alignment > 0.95f) {
+                        AddReward(0.5f);
                     }
                 }
 
-                if (bpController.name == "hip" || bpController.name == "spine" || bpController.name == "chest") {
-                    Vector3 bodyUp = bpController.rb.transform.up; 
-                    uprightReward += Vector3.Dot(bodyUp, Vector3.up); 
+                if (bpController.name.Contains("Hand")) {
+                    string hand = bpController.name[..bpController.name.IndexOf("H")];
+                    Transform ThighTransform = bpControllers.Find(bp => bp.name.Contains(hand + "Thigh")).rb.transform;
+                    float distance = Vector3.Distance(ThighTransform.position, bpController.rb.transform.position);
+                    if (distance > 0.6f || distance < 0.4f) {
+                        AddReward(-distance / 2);
+                    }
+                }
+
+                if (bpController.name.Contains("Thigh") || bpController.name.Contains("Shin") || bpController.name.Contains("Foot")) {
+                    Vector3 veloctity = bpController.rb.velocity;
+                    float speed = veloctity.magnitude;
+                    if (speed > 0.15f) {
+                        AddReward(-speed / 6);
+                    }
+                    if (speed > 5) {
+                        AddReward(-2.0f);
+                        EndEpisode();
+                    }
                 }
             }
-            AddReward(uprightReward / 3);
 
             if (groundContacts >= 5) {
                 AddReward(-2.0f);
-                // Debug.Log($"Reset triggered: {groundContacts} body parts touched the ground at time {Time.time}");
                 EndEpisode();
             }
-            // Debug.Log($"Reward: {GetCumulativeReward()}");
         }
         public override void Heuristic(in ActionBuffers actionsOut) {
             var continuousActions = actionsOut.ContinuousActions;
             int actionIndex = 0;
+
             foreach (var bpController in bpControllers){
                 if (bpController.joint != null) {
+
                     float time = Time.time;
-                    continuousActions[actionIndex++] = Mathf.Sin(time);
-                    continuousActions[actionIndex++] = Mathf.Cos(time);
-                    continuousActions[actionIndex++] = 0.0f;
+                    var joint = bpController.joint;
+
+                    if (joint.angularXMotion != ConfigurableJointMotion.Locked) {
+                        continuousActions[actionIndex++] = Mathf.Sin(time);
+                    }
+                    if (joint.angularYMotion != ConfigurableJointMotion.Locked) {
+                        continuousActions[actionIndex++] = Mathf.Cos(time);
+                    }
+                    if (joint.angularZMotion != ConfigurableJointMotion.Locked) {
+                        continuousActions[actionIndex++] = 0;
+                    }
                     continuousActions[actionIndex++] = 1f;
                 }
             }
+ 
         }
     }
 }

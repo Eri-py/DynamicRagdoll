@@ -99,11 +99,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4927398546086842648, guid: 439848d2a1c5c2045b7606eaa6608333, type: 3}
       propertyPath: m_BehaviorType
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4927398546086842648, guid: 439848d2a1c5c2045b7606eaa6608333, type: 3}
       propertyPath: m_BrainParameters.VectorObservationSize
       value: 224
+      objectReference: {fileID: 0}
+    - target: {fileID: 4927398546086842648, guid: 439848d2a1c5c2045b7606eaa6608333, type: 3}
+      propertyPath: m_BrainParameters.VectorActionSize.Array.data[0]
+      value: 43
+      objectReference: {fileID: 0}
+    - target: {fileID: 4927398546086842648, guid: 439848d2a1c5c2045b7606eaa6608333, type: 3}
+      propertyPath: m_BrainParameters.m_ActionSpec.m_NumContinuousActions
+      value: 43
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -125,7 +133,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 866740518743969739, guid: ebc5b75f2b1d8f2409a65f1b20c51cae, type: 3}
       propertyPath: m_VersionIndex
-      value: 2966
+      value: 2999
       objectReference: {fileID: 0}
     - target: {fileID: 1299139147385894810, guid: ebc5b75f2b1d8f2409a65f1b20c51cae, type: 3}
       propertyPath: m_Name
@@ -133,15 +141,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1587586086882405280, guid: ebc5b75f2b1d8f2409a65f1b20c51cae, type: 3}
       propertyPath: m_VersionIndex
-      value: 2966
+      value: 2999
       objectReference: {fileID: 0}
     - target: {fileID: 1658079951317732085, guid: ebc5b75f2b1d8f2409a65f1b20c51cae, type: 3}
       propertyPath: m_VersionIndex
-      value: 6980
+      value: 7013
       objectReference: {fileID: 0}
     - target: {fileID: 5030776232060236889, guid: ebc5b75f2b1d8f2409a65f1b20c51cae, type: 3}
       propertyPath: m_VersionIndex
-      value: 2966
+      value: 2999
       objectReference: {fileID: 0}
     - target: {fileID: 6513331186988261605, guid: ebc5b75f2b1d8f2409a65f1b20c51cae, type: 3}
       propertyPath: m_LocalPosition.x
@@ -185,7 +193,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7700086706025232054, guid: ebc5b75f2b1d8f2409a65f1b20c51cae, type: 3}
       propertyPath: m_VersionIndex
-      value: 2966
+      value: 2999
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

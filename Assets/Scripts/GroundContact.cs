@@ -7,8 +7,7 @@ namespace GameAI {
         // Attributes
         public bool isTouchingGround;
         public bool penalizeAgent;
-        public float penalty = -1;
-        const String groundTag = "Ground";
+        const string groundTag = "Ground";
         // Methods
         void OnCollisionEnter(Collision collision){
             if(collision.transform.CompareTag(groundTag)){
